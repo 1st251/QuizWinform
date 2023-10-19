@@ -32,6 +32,13 @@ namespace QuizWinform
                         // Optionally, you can check if the student is associated with the selected exam
                         // Exam and student are valid
                         MessageBox.Show("Login successful!");
+
+                        // Close the current form if you want
+                        this.Hide();
+
+                        // Open the QuizForm
+                        Quiz quizForm = new Quiz();
+                        quizForm.Show();
                     }
                     else if (student == null)
                     {
