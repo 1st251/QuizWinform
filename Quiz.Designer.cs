@@ -44,7 +44,6 @@
             lbStudent = new Label();
             lbChoice = new Label();
             btnNext = new Button();
-            btnQuest = new Button();
             SuspendLayout();
             // 
             // cbA
@@ -202,21 +201,11 @@
             btnNext.Text = "Next";
             btnNext.UseVisualStyleBackColor = true;
             // 
-            // btnQuest
-            // 
-            btnQuest.Location = new Point(152, 660);
-            btnQuest.Name = "btnQuest";
-            btnQuest.Size = new Size(28, 27);
-            btnQuest.TabIndex = 16;
-            btnQuest.Text = "1";
-            btnQuest.UseVisualStyleBackColor = true;
-            // 
             // Quiz
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1581, 795);
-            Controls.Add(btnQuest);
             Controls.Add(btnNext);
             Controls.Add(lbChoice);
             Controls.Add(lbStudent);
@@ -261,6 +250,5 @@
         private Label lbStudent;
         private Label lbChoice;
         private Button btnNext;
-        private Button btnQuest;
     }
 }
