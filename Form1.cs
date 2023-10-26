@@ -37,7 +37,7 @@ namespace QuizWinform
                         this.Hide();
 
                         // Open the QuizForm
-                        Quiz quizForm = new Quiz();
+                        Quiz quizForm = new Quiz(exam.ExamName, student.Username);
                         quizForm.Show();
                     }
                     else if (student == null)

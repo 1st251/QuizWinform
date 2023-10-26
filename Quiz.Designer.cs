@@ -32,7 +32,7 @@
             cbB = new CheckBox();
             cbD = new CheckBox();
             cbC = new CheckBox();
-            groupBox1 = new GroupBox();
+            gbQuestion = new GroupBox();
             btnFinish = new Button();
             label1 = new Label();
             cbWarning = new CheckBox();
@@ -87,17 +87,17 @@
             cbC.Text = "C";
             cbC.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // gbQuestion
             // 
-            groupBox1.Location = new Point(152, 97);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(1363, 547);
-            groupBox1.TabIndex = 4;
-            groupBox1.TabStop = false;
+            gbQuestion.Location = new Point(152, 97);
+            gbQuestion.Name = "gbQuestion";
+            gbQuestion.Size = new Size(1363, 547);
+            gbQuestion.TabIndex = 4;
+            gbQuestion.TabStop = false;
             // 
             // btnFinish
             // 
-            btnFinish.Location = new Point(1371, 687);
+            btnFinish.Location = new Point(1374, 750);
             btnFinish.Name = "btnFinish";
             btnFinish.Size = new Size(97, 33);
             btnFinish.TabIndex = 5;
@@ -118,7 +118,7 @@
             // 
             cbWarning.AutoSize = true;
             cbWarning.ForeColor = Color.FromArgb(0, 0, 192);
-            cbWarning.Location = new Point(1371, 662);
+            cbWarning.Location = new Point(1374, 725);
             cbWarning.Name = "cbWarning";
             cbWarning.Size = new Size(144, 19);
             cbWarning.TabIndex = 7;
@@ -129,7 +129,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            label2.Location = new Point(154, 7);
+            label2.Location = new Point(152, 9);
             label2.Name = "label2";
             label2.Size = new Size(94, 21);
             label2.TabIndex = 8;
@@ -171,7 +171,7 @@
             // 
             lbExamCode.AutoSize = true;
             lbExamCode.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            lbExamCode.Location = new Point(254, 7);
+            lbExamCode.Location = new Point(254, 9);
             lbExamCode.Name = "lbExamCode";
             lbExamCode.Size = new Size(0, 21);
             lbExamCode.TabIndex = 12;
@@ -215,7 +215,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1581, 812);
+            ClientSize = new Size(1581, 795);
             Controls.Add(btnQuest);
             Controls.Add(btnNext);
             Controls.Add(lbChoice);
@@ -228,7 +228,7 @@
             Controls.Add(cbWarning);
             Controls.Add(label1);
             Controls.Add(btnFinish);
-            Controls.Add(groupBox1);
+            Controls.Add(gbQuestion);
             Controls.Add(cbD);
             Controls.Add(cbC);
             Controls.Add(cbB);
@@ -249,7 +249,7 @@
         private CheckBox cbB;
         private CheckBox cbD;
         private CheckBox cbC;
-        private GroupBox groupBox1;
+        private GroupBox gbQuestion;
         private Button btnFinish;
         private Label label1;
         private CheckBox cbWarning;
