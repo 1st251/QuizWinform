@@ -16,6 +16,7 @@ namespace QuizWinform
         private List<Question> questions; // Add this variable to store the loaded questions
         private int currentQuestionIndex = 0; // Add this variable to keep track of the current question index
         private PRN_ProjectContext context;
+        private Dictionary<int, Dictionary<string, bool>> checkboxStates = new Dictionary<int, Dictionary<string, bool>>();
         public Quiz()
         {
             InitializeComponent();
@@ -98,6 +99,7 @@ namespace QuizWinform
 
                 if (questions.Any())
                 {
+
                     // Clear existing controls outside the group box
                     ClearButtons();
 
@@ -177,8 +179,6 @@ namespace QuizWinform
                 MessageBox.Show("Error loading questions: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
         private void LoadQuestion(Question question, int currentButtonNumber)
         {
             // Load the specified question
@@ -190,7 +190,7 @@ namespace QuizWinform
                 // Create a Label to display the concatenated string with larger font size and line breaks
                 Label lblQuestion = new Label();
                 lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
-                lblQuestion.Text = $"Question {currentButtonNumber+1}: {question.QuestionText}\n" +
+                lblQuestion.Text = $"Question {currentButtonNumber + 1}: {question.QuestionText}\n" +
                                    $"A: {question.OptionA}\n" +
                                    $"B: {question.OptionB}\n" +
                                    $"C: {question.OptionC}\n" +
@@ -202,6 +202,9 @@ namespace QuizWinform
 
                 // Add the Label to the group box
                 gbQuestion.Controls.Add(lblQuestion);
+
+                // Load and set checkbox states
+                LoadCheckboxStates(question, currentButtonNumber);
             }
             else
             {
@@ -250,6 +253,12 @@ namespace QuizWinform
 
         private void btnNext_Click(object sender, EventArgs e)
         {
+            // Save the checkbox states for the current question
+            SaveCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
+
+            // Clear all checkboxes before loading the next question
+            ClearAllCheckboxes();
+
             // Navigate to the next question
             if (questions != null && currentQuestionIndex < questions.Count - 1)
             {
@@ -269,6 +278,9 @@ namespace QuizWinform
             // Load the question based on the updated index
             LoadQuestion(questions[currentQuestionIndex], currentQuestionIndex);
 
+            // Load the checkbox states for the new question
+            LoadCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
+
             // Update the lbQuestion label
             UpdateQuestionLabel();
         }
@@ -284,6 +296,89 @@ namespace QuizWinform
         private void UpdateQuestionLabel()
         {
             lbQuestion.Text = $"{currentQuestionIndex + 1}/{questions.Count}";
+        }
+        private void LoadCheckboxStates(Question question, int currentButtonNumber)
+        {
+            // Load checkbox states for the current question
+            if (checkboxStates.TryGetValue(currentButtonNumber, out var questionCheckboxStates))
+            {
+                // Set checkbox states based on the saved states
+                SetCheckboxState(cbA, "cbA", questionCheckboxStates);
+                SetCheckboxState(cbB, "cbB", questionCheckboxStates);
+                SetCheckboxState(cbC, "cbC", questionCheckboxStates);
+                SetCheckboxState(cbD, "cbD", questionCheckboxStates);
+            }
+            else
+            {
+                // Initialize checkbox states if not found
+                checkboxStates[currentButtonNumber] = new Dictionary<string, bool>();
+            }
+        }
+
+        private void SetCheckboxState(CheckBox checkbox, string checkboxName, Dictionary<string, bool> questionCheckboxStates)
+        {
+            // Find the checkbox control by name and set its checked state
+            if (checkbox != null)
+            {
+                if (questionCheckboxStates.TryGetValue(checkboxName, out var isChecked))
+                {
+                    checkbox.Checked = isChecked;
+                }
+            }
+        }
+
+        private void SaveCheckboxStates(Question question, int currentButtonNumber)
+        {
+            // Save checkbox states for the current question
+            Dictionary<string, bool> questionCheckboxStates = new Dictionary<string, bool>();
+
+            // Check for null before accessing properties
+            if (cbA != null)
+            {
+                questionCheckboxStates["cbA"] = cbA.Checked;
+            }
+
+            if (cbB != null)
+            {
+                questionCheckboxStates["cbB"] = cbB.Checked;
+            }
+
+            if (cbC != null)
+            {
+                questionCheckboxStates["cbC"] = cbC.Checked;
+            }
+
+            if (cbD != null)
+            {
+                questionCheckboxStates["cbD"] = cbD.Checked;
+            }
+
+            // Save the dictionary to the main dictionary
+            checkboxStates[currentButtonNumber] = questionCheckboxStates;
+        }
+
+        private void ClearAllCheckboxes()
+        {
+            // Check for null before accessing properties
+            if (cbA != null)
+            {
+                cbA.Checked = false;
+            }
+
+            if (cbB != null)
+            {
+                cbB.Checked = false;
+            }
+
+            if (cbC != null)
+            {
+                cbC.Checked = false;
+            }
+
+            if (cbD != null)
+            {
+                cbD.Checked = false;
+            }
         }
     }
 }
