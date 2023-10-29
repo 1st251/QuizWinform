@@ -57,7 +57,7 @@ namespace QuizWinform
                         // Create a Label to display the concatenated string with larger font size and line breaks
                         Label lblQuestion = new Label();
                         lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
-                        lblQuestion.Text = $"Question: {question.QuestionText}\n" +
+                        lblQuestion.Text = $"Question 1: {question.QuestionText}\n" +
                                            $"A: {question.OptionA}\n" +
                                            $"B: {question.OptionB}\n" +
                                            $"C: {question.OptionC}\n" +
@@ -131,7 +131,7 @@ namespace QuizWinform
                                 // Create a Label to display the concatenated string with larger font size and line breaks
                                 Label lblQuestion = new Label();
                                 lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
-                                lblQuestion.Text = $"Question: {selectedQuestion.QuestionText}\n" +
+                                lblQuestion.Text = $"Question {currentButtonNumber.ToString()}: {selectedQuestion.QuestionText}\n" +
                                                    $"A: {selectedQuestion.OptionA}\n" +
                                                    $"B: {selectedQuestion.OptionB}\n" +
                                                    $"C: {selectedQuestion.OptionC}\n" +
@@ -146,6 +146,9 @@ namespace QuizWinform
 
                                 // Update the current question index
                                 currentQuestionIndex = currentButtonNumber - 1;
+
+                                // Update the lbQuestion label
+                                UpdateQuestionLabel();
                             }
                             else
                             {
@@ -159,6 +162,9 @@ namespace QuizWinform
                         buttonLeft += buttonWidth + horizontalSpacing; // Adjust the spacing between buttons
                         buttonNumber++; // Increment the button number
                     }
+
+                    // Update the lbQuestion label after creating buttons
+                    UpdateQuestionLabel();
                 }
                 else
                 {
@@ -173,7 +179,7 @@ namespace QuizWinform
         }
 
 
-        private void LoadQuestion(Question question)
+        private void LoadQuestion(Question question, int currentButtonNumber)
         {
             // Load the specified question
             if (question != null)
@@ -184,7 +190,7 @@ namespace QuizWinform
                 // Create a Label to display the concatenated string with larger font size and line breaks
                 Label lblQuestion = new Label();
                 lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
-                lblQuestion.Text = $"Question: {question.QuestionText}\n" +
+                lblQuestion.Text = $"Question {currentButtonNumber+1}: {question.QuestionText}\n" +
                                    $"A: {question.OptionA}\n" +
                                    $"B: {question.OptionB}\n" +
                                    $"C: {question.OptionC}\n" +
@@ -261,15 +267,23 @@ namespace QuizWinform
             }
 
             // Load the question based on the updated index
-            LoadQuestion(questions[currentQuestionIndex]);
+            LoadQuestion(questions[currentQuestionIndex], currentQuestionIndex);
+
+            // Update the lbQuestion label
+            UpdateQuestionLabel();
         }
 
         private void cbWarning_CheckedChanged(object sender, EventArgs e)
         {
             btnFinish.Enabled = true;
-            if (cbWarning.Checked==false) {
+            if (cbWarning.Checked == false)
+            {
                 btnFinish.Enabled = false;
             }
+        }
+        private void UpdateQuestionLabel()
+        {
+            lbQuestion.Text = $"{currentQuestionIndex + 1}/{questions.Count}";
         }
     }
 }

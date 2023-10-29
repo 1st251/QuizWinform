@@ -44,6 +44,7 @@
             lbStudent = new Label();
             lbChoice = new Label();
             btnNext = new Button();
+            lbQuestion = new Label();
             SuspendLayout();
             // 
             // cbA
@@ -204,11 +205,23 @@
             btnNext.UseVisualStyleBackColor = true;
             btnNext.Click += btnNext_Click;
             // 
+            // lbQuestion
+            // 
+            lbQuestion.AutoSize = true;
+            lbQuestion.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point);
+            lbQuestion.ForeColor = SystemColors.HotTrack;
+            lbQuestion.Location = new Point(152, 77);
+            lbQuestion.Name = "lbQuestion";
+            lbQuestion.Size = new Size(63, 25);
+            lbQuestion.TabIndex = 16;
+            lbQuestion.Text = "label5";
+            // 
             // Quiz
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1581, 795);
+            Controls.Add(lbQuestion);
             Controls.Add(btnNext);
             Controls.Add(lbChoice);
             Controls.Add(lbStudent);
@@ -253,5 +266,6 @@
         private Label lbStudent;
         private Label lbChoice;
         private Button btnNext;
+        private Label lbQuestion;
     }
 }
