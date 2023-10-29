@@ -104,6 +104,7 @@ namespace QuizWinform
                     int buttonWidth = 28;
                     int buttonHeight = 27;
                     int horizontalSpacing = 15;
+                    int buttonNumber = 1;
 
                     foreach (var question in questions)
                     {
@@ -111,7 +112,7 @@ namespace QuizWinform
                         Button btnQuest = new Button();
                         btnQuest.Location = new Point(buttonLeft, buttonTop);
                         btnQuest.Size = new Size(buttonWidth, buttonHeight);
-                        btnQuest.Text = question.QuestionId.ToString();
+                        btnQuest.Text = buttonNumber.ToString(); // Use the buttonNumber instead of question.QuestionId
                         btnQuest.Name = $"btnQuest{question.QuestionId}";
                         btnQuest.Click += (sender, e) =>
                         {
@@ -149,6 +150,7 @@ namespace QuizWinform
 
                         // Adjust button positions
                         buttonLeft += buttonWidth + horizontalSpacing; // Adjust the spacing between buttons
+                        buttonNumber++; // Increment the button number
                     }
                 }
                 else
@@ -162,6 +164,7 @@ namespace QuizWinform
                 MessageBox.Show("Error loading questions: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void ClearButtons()
         {
