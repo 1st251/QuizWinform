@@ -96,6 +96,7 @@
             // 
             // btnFinish
             // 
+            btnFinish.Enabled = false;
             btnFinish.Location = new Point(1374, 750);
             btnFinish.Name = "btnFinish";
             btnFinish.Size = new Size(97, 33);
@@ -123,6 +124,7 @@
             cbWarning.TabIndex = 7;
             cbWarning.Text = "I want finish this exam";
             cbWarning.UseVisualStyleBackColor = true;
+            cbWarning.CheckedChanged += cbWarning_CheckedChanged;
             // 
             // label2
             // 
@@ -200,6 +202,7 @@
             btnNext.TabIndex = 15;
             btnNext.Text = "Next";
             btnNext.UseVisualStyleBackColor = true;
+            btnNext.Click += btnNext_Click;
             // 
             // Quiz
             // 

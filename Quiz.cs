@@ -13,6 +13,8 @@ namespace QuizWinform
 {
     public partial class Quiz : Form
     {
+        private List<Question> questions; // Add this variable to store the loaded questions
+        private int currentQuestionIndex = 0; // Add this variable to keep track of the current question index
         private PRN_ProjectContext context;
         public Quiz()
         {
@@ -90,7 +92,7 @@ namespace QuizWinform
             try
             {
                 // Assuming you have a DbSet property named "Questions" in your DbContext
-                var questions = context.Questions
+                questions = context.Questions
                     .Where(q => q.ExamId == examId)
                     .ToList();
 
@@ -108,11 +110,13 @@ namespace QuizWinform
 
                     foreach (var question in questions)
                     {
+                        int currentButtonNumber = buttonNumber; // Capture the current button number in a local variable
+
                         // Create a button for each question
                         Button btnQuest = new Button();
                         btnQuest.Location = new Point(buttonLeft, buttonTop);
                         btnQuest.Size = new Size(buttonWidth, buttonHeight);
-                        btnQuest.Text = buttonNumber.ToString(); // Use the buttonNumber instead of question.QuestionId
+                        btnQuest.Text = currentButtonNumber.ToString();
                         btnQuest.Name = $"btnQuest{question.QuestionId}";
                         btnQuest.Click += (sender, e) =>
                         {
@@ -139,12 +143,15 @@ namespace QuizWinform
 
                                 // Add the Label to the group box
                                 gbQuestion.Controls.Add(lblQuestion);
+
+                                // Update the current question index
+                                currentQuestionIndex = currentButtonNumber - 1;
                             }
                             else
                             {
                                 MessageBox.Show("Question not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
-                        }; // Load the corresponding question on button click
+                        };
 
                         Controls.Add(btnQuest);
 
@@ -165,6 +172,36 @@ namespace QuizWinform
             }
         }
 
+
+        private void LoadQuestion(Question question)
+        {
+            // Load the specified question
+            if (question != null)
+            {
+                // Clear existing controls in the group box
+                gbQuestion.Controls.Clear();
+
+                // Create a Label to display the concatenated string with larger font size and line breaks
+                Label lblQuestion = new Label();
+                lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
+                lblQuestion.Text = $"Question: {question.QuestionText}\n" +
+                                   $"A: {question.OptionA}\n" +
+                                   $"B: {question.OptionB}\n" +
+                                   $"C: {question.OptionC}\n" +
+                                   $"D: {question.OptionD}";
+                lblQuestion.Top = 20;
+                lblQuestion.Width = gbQuestion.Width - 40; // Adjust width based on your design
+                lblQuestion.Height = 200; // Adjust height based on your design
+                lblQuestion.AutoSize = false; // Ensure the label size is fixed
+
+                // Add the Label to the group box
+                gbQuestion.Controls.Add(lblQuestion);
+            }
+            else
+            {
+                MessageBox.Show("Question not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
         private void ClearButtons()
         {
@@ -203,6 +240,36 @@ namespace QuizWinform
         private void label5_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void btnNext_Click(object sender, EventArgs e)
+        {
+            // Navigate to the next question
+            if (questions != null && currentQuestionIndex < questions.Count - 1)
+            {
+                currentQuestionIndex++;
+            }
+            else if (questions != null && questions.Any())
+            {
+                // If we reached the last question, go back to the first question
+                currentQuestionIndex = 0;
+            }
+            else
+            {
+                MessageBox.Show("No questions found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return; // Return here to prevent further execution if there are no questions
+            }
+
+            // Load the question based on the updated index
+            LoadQuestion(questions[currentQuestionIndex]);
+        }
+
+        private void cbWarning_CheckedChanged(object sender, EventArgs e)
+        {
+            btnFinish.Enabled = true;
+            if (cbWarning.Checked==false) {
+                btnFinish.Enabled = false;
+            }
         }
     }
 }
