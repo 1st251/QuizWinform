@@ -307,36 +307,6 @@ namespace QuizWinform
         {
             lbQuestion.Text = $"{currentQuestionIndex + 1}/{questions.Count}";
         }
-        private void LoadCheckboxStates(Question question, int currentButtonNumber)
-        {
-            // Load checkbox states for the current question
-            if (checkboxStates.TryGetValue(currentButtonNumber, out var questionCheckboxStates))
-            {
-                // Set checkbox states based on the saved states
-                SetCheckboxState(cbA, "cbA", questionCheckboxStates);
-                SetCheckboxState(cbB, "cbB", questionCheckboxStates);
-                SetCheckboxState(cbC, "cbC", questionCheckboxStates);
-                SetCheckboxState(cbD, "cbD", questionCheckboxStates);
-            }
-            else
-            {
-                // Initialize checkbox states if not found
-                checkboxStates[currentButtonNumber] = new Dictionary<string, bool>();
-            }
-        }
-
-        private void SetCheckboxState(CheckBox checkbox, string checkboxName, Dictionary<string, bool> questionCheckboxStates)
-        {
-            // Find the checkbox control by name and set its checked state
-            if (checkbox != null)
-            {
-                if (questionCheckboxStates.TryGetValue(checkboxName, out var isChecked))
-                {
-                    checkbox.Checked = isChecked;
-                }
-            }
-        }
-
         private void SaveCheckboxStates(Question question, int currentButtonNumber)
         {
             // Save checkbox states for the current question
@@ -367,6 +337,36 @@ namespace QuizWinform
             checkboxStates[currentButtonNumber] = questionCheckboxStates;
         }
 
+        private void LoadCheckboxStates(Question question, int currentButtonNumber)
+        {
+            // Load checkbox states for the current question
+            if (checkboxStates.TryGetValue(currentButtonNumber, out var questionCheckboxStates))
+            {
+                // Set checkbox states based on the saved states
+                SetCheckboxState(cbA, "cbA", questionCheckboxStates);
+                SetCheckboxState(cbB, "cbB", questionCheckboxStates);
+                SetCheckboxState(cbC, "cbC", questionCheckboxStates);
+                SetCheckboxState(cbD, "cbD", questionCheckboxStates);
+            }
+            else
+            {
+                // Initialize checkbox states if not found
+                checkboxStates[currentButtonNumber] = new Dictionary<string, bool>();
+            }
+        }
+
+        private void SetCheckboxState(CheckBox checkbox, string checkboxName, Dictionary<string, bool> questionCheckboxStates)
+        {
+            // Find the checkbox control by name and set its checked state
+            if (checkbox != null)
+            {
+                if (questionCheckboxStates.TryGetValue(checkboxName, out var isChecked))
+                {
+                    checkbox.Checked = isChecked;
+                }
+            }
+        }
+
         private void ClearAllCheckboxes()
         {
             // Check for null before accessing properties
@@ -389,6 +389,80 @@ namespace QuizWinform
             {
                 cbD.Checked = false;
             }
+        }
+
+        private void btnFinish_Click(object sender, EventArgs e)
+        {
+            // Calculate the number of correct answers
+            int correctAnswers = CalculateCorrectAnswers();
+
+            // Calculate the mark based on the formula: 10 / number of questions x number of correct answers
+            double totalQuestions = questions.Count;
+            double mark = (10.0 / totalQuestions) * correctAnswers;
+
+            // Display the mark
+            MessageBox.Show($"Your mark is: {mark}", "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            // Close all forms
+            //Application.Exit();
+        }
+
+        private int CalculateCorrectAnswers()
+        {
+            int correctAnswers = 0;
+
+            // Store correct questions for displaying in the MessageBox
+            List<string> correctQuestionsList = new List<string>();
+
+            // Loop through each question and check if the selected checkboxes match the correct answer
+            foreach (var question in questions)
+            {
+                if (checkboxStates.TryGetValue(question.QuestionId, out var questionCheckboxStates))
+                {
+                    bool isCorrect = true;
+
+                    if (questionCheckboxStates.TryGetValue("cbA", out var isCbAChecked))
+                    {
+                        isCorrect &= (isCbAChecked && question.CorrectAnswer == "A");
+                    }
+
+                    if (questionCheckboxStates.TryGetValue("cbB", out var isCbBChecked))
+                    {
+                        isCorrect &= (isCbBChecked && question.CorrectAnswer == "B");
+                    }
+
+                    if (questionCheckboxStates.TryGetValue("cbC", out var isCbCChecked))
+                    {
+                        isCorrect &= (isCbCChecked && question.CorrectAnswer == "C");
+                    }
+
+                    if (questionCheckboxStates.TryGetValue("cbD", out var isCbDChecked))
+                    {
+                        isCorrect &= (isCbDChecked && question.CorrectAnswer == "D");
+                    }
+
+                    Console.WriteLine($"Question {question.QuestionId}: IsCorrect: {isCorrect}");
+
+                    if (isCorrect)
+                    {
+                        correctQuestionsList.Add($"Question {question.QuestionId}");
+                        correctAnswers++;
+                    }
+                }
+            }
+
+            // Display a message with the correct questions
+            if (correctQuestionsList.Any())
+            {
+                string correctQuestionsMessage = $"Correct Questions ({correctAnswers}):\n{string.Join("\n", correctQuestionsList)}";
+                MessageBox.Show(correctQuestionsMessage, "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("No correct questions.", "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            return correctAnswers;
         }
     }
 }

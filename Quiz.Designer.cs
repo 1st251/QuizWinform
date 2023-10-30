@@ -104,6 +104,7 @@
             btnFinish.TabIndex = 5;
             btnFinish.Text = "Finish";
             btnFinish.UseVisualStyleBackColor = true;
+            btnFinish.Click += btnFinish_Click;
             // 
             // label1
             // 
@@ -218,8 +219,7 @@
             // 
             // Quiz
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleMode = AutoScaleMode.None;
             ClientSize = new Size(1581, 795);
             Controls.Add(lbQuestion);
             Controls.Add(btnNext);
