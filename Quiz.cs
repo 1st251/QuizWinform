@@ -99,9 +99,8 @@ namespace QuizWinform
 
                 if (questions.Any())
                 {
-
                     // Clear existing controls outside the group box
-                    ClearButtons();
+                    ClearAllCheckboxes();
 
                     int buttonTop = 660;
                     int buttonLeft = 152;
@@ -120,8 +119,15 @@ namespace QuizWinform
                         btnQuest.Size = new Size(buttonWidth, buttonHeight);
                         btnQuest.Text = currentButtonNumber.ToString();
                         btnQuest.Name = $"btnQuest{question.QuestionId}";
+                        // Set the button click event
                         btnQuest.Click += (sender, e) =>
                         {
+                            // Save the checkbox states for the current question
+                            SaveCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
+
+                            // Clear all checkboxes before loading the next question
+                            ClearAllCheckboxes();
+
                             // Load the corresponding question without using LoadQuestionById
                             var selectedQuestion = context.Questions.FirstOrDefault(q => q.QuestionId == question.QuestionId);
 
@@ -148,6 +154,9 @@ namespace QuizWinform
 
                                 // Update the current question index
                                 currentQuestionIndex = currentButtonNumber - 1;
+
+                                // Load the checkbox states for the new question
+                                LoadCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
 
                                 // Update the lbQuestion label
                                 UpdateQuestionLabel();
@@ -179,6 +188,7 @@ namespace QuizWinform
                 MessageBox.Show("Error loading questions: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void LoadQuestion(Question question, int currentButtonNumber)
         {
             // Load the specified question
