@@ -17,6 +17,8 @@ namespace QuizWinform
         private int currentQuestionIndex = 0; // Add this variable to keep track of the current question index
         private PRN_ProjectContext context;
         private Dictionary<int, Dictionary<string, bool>> checkboxStates = new Dictionary<int, Dictionary<string, bool>>();
+        private Dictionary<int, Button> questionButtons = new Dictionary<int, Button>();
+
         public Quiz()
         {
             InitializeComponent();
@@ -111,54 +113,59 @@ namespace QuizWinform
 
                     foreach (var question in questions)
                     {
-                        int currentButtonNumber = buttonNumber; // Capture the current button number in a local variable
+                        int currentButtonNumber = buttonNumber;
 
-                        // Create a button for each question
                         Button btnQuest = new Button();
                         btnQuest.Location = new Point(buttonLeft, buttonTop);
                         btnQuest.Size = new Size(buttonWidth, buttonHeight);
                         btnQuest.Text = currentButtonNumber.ToString();
                         btnQuest.Name = $"btnQuest{question.QuestionId}";
-                        // Set the button click event
+
+                        // Add the button to the dictionary
+                        questionButtons[currentButtonNumber - 1] = btnQuest;
+
                         btnQuest.Click += (sender, e) =>
                         {
                             // Save the checkbox states for the current question
                             SaveCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
 
-                            // Clear all checkboxes before loading the next question
+                            // Check if any checkbox is checked for the current question
+                            bool isAnyCheckboxChecked = checkboxStates[currentQuestionIndex].Any(kv => kv.Value);
+
+                            // If any checkbox is checked, turn the corresponding button green
+                            if (isAnyCheckboxChecked)
+                            {
+                                Button currentButton = questionButtons[currentQuestionIndex];
+                                if (currentButton != null)
+                                {
+                                    currentButton.BackColor = Color.Green;
+                                }
+                            }
+
                             ClearAllCheckboxes();
 
-                            // Load the corresponding question without using LoadQuestionById
                             var selectedQuestion = context.Questions.FirstOrDefault(q => q.QuestionId == question.QuestionId);
 
                             if (selectedQuestion != null)
                             {
-                                // Clear existing controls in the group box
                                 gbQuestion.Controls.Clear();
 
-                                // Create a Label to display the concatenated string with larger font size and line breaks
                                 Label lblQuestion = new Label();
-                                lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular); // Set font size to 16
+                                lblQuestion.Font = new Font(lblQuestion.Font.FontFamily, 16, FontStyle.Regular);
                                 lblQuestion.Text = $"Question {currentButtonNumber.ToString()}: {selectedQuestion.QuestionText}\n" +
                                                    $"A: {selectedQuestion.OptionA}\n" +
                                                    $"B: {selectedQuestion.OptionB}\n" +
                                                    $"C: {selectedQuestion.OptionC}\n" +
                                                    $"D: {selectedQuestion.OptionD}";
                                 lblQuestion.Top = 20;
-                                lblQuestion.Width = gbQuestion.Width - 40; // Adjust width based on your design
-                                lblQuestion.Height = 200; // Adjust height based on your design
-                                lblQuestion.AutoSize = false; // Ensure the label size is fixed
+                                lblQuestion.Width = gbQuestion.Width - 40;
+                                lblQuestion.Height = 200;
+                                lblQuestion.AutoSize = false;
 
-                                // Add the Label to the group box
                                 gbQuestion.Controls.Add(lblQuestion);
 
-                                // Update the current question index
                                 currentQuestionIndex = currentButtonNumber - 1;
-
-                                // Load the checkbox states for the new question
                                 LoadCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
-
-                                // Update the lbQuestion label
                                 UpdateQuestionLabel();
                             }
                             else
@@ -170,8 +177,8 @@ namespace QuizWinform
                         Controls.Add(btnQuest);
 
                         // Adjust button positions
-                        buttonLeft += buttonWidth + horizontalSpacing; // Adjust the spacing between buttons
-                        buttonNumber++; // Increment the button number
+                        buttonLeft += buttonWidth + horizontalSpacing;
+                        buttonNumber++;
                     }
 
                     // Update the lbQuestion label after creating buttons
@@ -188,6 +195,7 @@ namespace QuizWinform
                 MessageBox.Show("Error loading questions: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void LoadQuestion(Question question, int currentButtonNumber)
         {
@@ -219,17 +227,6 @@ namespace QuizWinform
             else
             {
                 MessageBox.Show("Question not found.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void ClearButtons()
-        {
-            foreach (Control control in Controls)
-            {
-                if (control is Button && control.Name.StartsWith("btnQuest"))
-                {
-                    Controls.Remove(control);
-                }
             }
         }
 
@@ -265,6 +262,19 @@ namespace QuizWinform
         {
             // Save the checkbox states for the current question
             SaveCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
+
+            // Check if any checkbox is checked for the current question
+            bool isAnyCheckboxChecked = checkboxStates[currentQuestionIndex].Any(kv => kv.Value);
+
+            // If any checkbox is checked, turn the corresponding button green
+            if (isAnyCheckboxChecked)
+            {
+                Button currentButton = Controls.Find($"btnQuest{currentQuestionIndex + 1}", true).FirstOrDefault() as Button;
+                if (currentButton != null)
+                {
+                    currentButton.BackColor = Color.Green;
+                }
+            }
 
             // Clear all checkboxes before loading the next question
             ClearAllCheckboxes();
@@ -393,76 +403,7 @@ namespace QuizWinform
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
-            // Calculate the number of correct answers
-            int correctAnswers = CalculateCorrectAnswers();
 
-            // Calculate the mark based on the formula: 10 / number of questions x number of correct answers
-            double totalQuestions = questions.Count;
-            double mark = (10.0 / totalQuestions) * correctAnswers;
-
-            // Display the mark
-            MessageBox.Show($"Your mark is: {mark}", "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            // Close all forms
-            //Application.Exit();
-        }
-
-        private int CalculateCorrectAnswers()
-        {
-            int correctAnswers = 0;
-
-            // Store correct questions for displaying in the MessageBox
-            List<string> correctQuestionsList = new List<string>();
-
-            // Loop through each question and check if the selected checkboxes match the correct answer
-            foreach (var question in questions)
-            {
-                if (checkboxStates.TryGetValue(question.QuestionId, out var questionCheckboxStates))
-                {
-                    bool isCorrect = true;
-
-                    if (questionCheckboxStates.TryGetValue("cbA", out var isCbAChecked))
-                    {
-                        isCorrect &= (isCbAChecked && question.CorrectAnswer == "A");
-                    }
-
-                    if (questionCheckboxStates.TryGetValue("cbB", out var isCbBChecked))
-                    {
-                        isCorrect &= (isCbBChecked && question.CorrectAnswer == "B");
-                    }
-
-                    if (questionCheckboxStates.TryGetValue("cbC", out var isCbCChecked))
-                    {
-                        isCorrect &= (isCbCChecked && question.CorrectAnswer == "C");
-                    }
-
-                    if (questionCheckboxStates.TryGetValue("cbD", out var isCbDChecked))
-                    {
-                        isCorrect &= (isCbDChecked && question.CorrectAnswer == "D");
-                    }
-
-                    Console.WriteLine($"Question {question.QuestionId}: IsCorrect: {isCorrect}");
-
-                    if (isCorrect)
-                    {
-                        correctQuestionsList.Add($"Question {question.QuestionId}");
-                        correctAnswers++;
-                    }
-                }
-            }
-
-            // Display a message with the correct questions
-            if (correctQuestionsList.Any())
-            {
-                string correctQuestionsMessage = $"Correct Questions ({correctAnswers}):\n{string.Join("\n", correctQuestionsList)}";
-                MessageBox.Show(correctQuestionsMessage, "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("No correct questions.", "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-
-            return correctAnswers;
         }
     }
 }
