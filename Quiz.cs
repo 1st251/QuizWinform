@@ -403,7 +403,70 @@ namespace QuizWinform
 
         private void btnFinish_Click(object sender, EventArgs e)
         {
+            try
+            {
+                // Save the checkbox states for the current question
+                SaveCheckboxStates(questions[currentQuestionIndex], currentQuestionIndex);
 
+                // Calculate the number of correct answers
+                int correctAnswers = CalculateCorrectAnswers();
+
+                // Calculate the mark
+                double mark = (10.0 / questions.Count) * correctAnswers;
+
+                // Display the mark
+                MessageBox.Show($"Your mark: {mark}", "Quiz Result", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Optionally, you can close the form or perform other actions here
+
+                // Close the form
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions appropriately
+                MessageBox.Show("Error calculating the mark: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private int CalculateCorrectAnswers()
+        {
+            int correctAnswers = 0;
+
+            foreach (var question in questions)
+            {
+                // Retrieve the saved checkbox states for the question
+                if (checkboxStates.TryGetValue(question.QuestionId - 1, out var questionCheckboxStates))
+                {
+                    // Check if the selected checkboxes match the correct answers in the database
+                    bool isCorrect = IsCheckboxStateCorrect(questionCheckboxStates, question.CorrectAnswer);
+
+                    if (isCorrect)
+                    {
+                        correctAnswers++;
+                    }
+                }
+            }
+
+            return correctAnswers;
+        }
+
+        private bool IsCheckboxStateCorrect(Dictionary<string, bool> checkboxStates, string correctAnswer)
+        {
+            // Determine if the selected checkboxes match the correct answer in the database
+            switch (correctAnswer)
+            {
+                case "A":
+                    return checkboxStates.TryGetValue("cbA", out var isCheckedA) && isCheckedA;
+                case "B":
+                    return checkboxStates.TryGetValue("cbB", out var isCheckedB) && isCheckedB;
+                case "C":
+                    return checkboxStates.TryGetValue("cbC", out var isCheckedC) && isCheckedC;
+                case "D":
+                    return checkboxStates.TryGetValue("cbD", out var isCheckedD) && isCheckedD;
+                default:
+                    return false;
+            }
         }
     }
 }
